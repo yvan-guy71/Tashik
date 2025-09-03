@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Chapitres récemment ajoutés{% endblock %}
+{% block content %}
+
+<section class="manga-section">
+    <h2 style="color: #000;">
+        <span style="color: #000;">
+            <i class="fas fa-book-open"></i>
+        </span>
+        Chapitres nouvellement ajoutés
+    </h2>
+    <ul class="recent-chapters-list" style="list-style: none; padding: 0;">
+        {% if recent_chapters %}
+            {% for chap in recent_chapters %}
+                <li class="recent-chapter-row">
+                    <div class="recent-chapter-main">
+                        <i class="fa fa-book" style="color: #000; font-size: 18px;"></i>
+                        <a href="{{ url_for('manga', manga_name=chap.manga_name) }}">
+                            <span class="manga-name-hover">{{ chap.manga_name }}</span>
+                        </a>
+                        <a href="{{ url_for('reader', manga_name=chap.manga_name, chapter_name=chap.chapter_folder) }}">
+                            <span class="chapter-name-hover">#{{ chap.chapter_folder }}.</span>
+                            {% if chap.is_hot %}
+                                <span class="badge badge-hot">HOT</span>
+                            {% endif %}
+                            {% if chap.is_new %}
+                                <span class="badge badge-new">NEW</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <span class="chapter-date">
+                        Ajouté le {{ chap.date_added|datetimeformat }}
+                    </span>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun chapitre récent trouvé.</li>
+        {% endif %}
+    </ul>
+</section>
+
+{% endblock %}

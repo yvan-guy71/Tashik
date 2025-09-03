@@ -1,0 +1,43 @@
+<!-- filepath: c:\Users\ORDI\Desktop\Programmation\flask\templates\annuaire.html -->
+{% extends "base.html" %}
+{% block title %}Annuaire des Mangas{% endblock %}
+{% block content %}
+<div class="title">Annuaire des mangas</div>
+<div class="annuaire-filters">
+    <form method="get" action="{{ url_for('annuaire') }}">
+        <select name="categorie" class="filter-select" onchange="this.form.submit()">
+            <option value="">Toutes les catégories</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+        <div class="alphabet-index">
+            {% for l in lettres %}
+                <a href="{{ url_for('annuaire', categorie=selected_category, lettre=l) }}"
+                   class="{% if l == selected_lettre %}active-lettre{% endif %}">{{ l }}</a>
+            {% endfor %}
+        </div>
+    </form>
+</div>
+
+<ul class="annuaire-manga-list">
+    {% for manga in mangas %}
+        <li>
+            <a href="{{ url_for('manga', manga_name=manga.name) }}">
+                <span class="annuaire-manga-img-wrapper">
+                    <img src="{{ manga.cover or url_for('static', filename='default-cover.jpg') }}" alt="Cover de {{ manga.name }}" class="annuaire-manga-cover">
+                </span>
+                <span class="annuaire-manga-title">{{ manga.name }}</span>
+                {% if manga.is_hot_manual %}<span class="badge badge-hot">HOT</span>{% endif %}
+                {% if manga.is_hot_auto %}<span class="badge badge-hot">HOT</span>{% endif %}
+                {% if manga.is_new_manual %}<span class="badge badge-new">NEW</span>{% endif %}
+                {% if manga.is_new_auto %}<span class="badge badge-new">NEW</span>{% endif %}
+                {% if manga.is_top_manual %}<span class="badge badge-top">TOP</span>{% endif %}
+                {% if manga.is_top_auto %}<span class="badge badge-top">TOP</span>{% endif %}
+            </a>
+        </li>
+    {% else %}
+        <li>Aucun manga trouvé.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

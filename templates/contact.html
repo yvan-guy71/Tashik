@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block body_class %}contact-bg{% endblock %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+<div class="contact-main-container">
+    <div class="contact-image-side">
+        <form class="contact-form-on-image right" method="post">
+            <h3 style="color: #fff; margin-left: 80px;">Contactez-nous</h3>
+            <p>Vous avez une question, une suggestion ou un problème ? N'hésitez pas à nous contacter, nous sommes là pour vous aider !</p>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flashes">
+                  {% for category, message in messages %}
+                    {% if category in ['danger', 'success'] %}
+                      <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <input type="text" name="fullname" placeholder="Votre Nom" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <textarea name="message" placeholder="Entrez votre Message..." required></textarea>
+            <button type="submit" style="background-color: #2c4e50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;"
+               onmouseover="this.style.backgroundColor='#3d9cdbff';">Envoyer</button>
+        </form>
+    </div>
+</div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const flashes = document.querySelectorAll(".flash");
+                flashes.forEach(flash => {
+                    setTimeout(() => {
+                        flash.style.display = "none";
+                    }, 5000);
+                });
+            });
+        </script>
+{% endblock %}

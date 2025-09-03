@@ -1,0 +1,6 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "chatgpt.gpt3.apiKey": "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",
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
+}

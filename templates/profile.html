@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Mon profil{% endblock %}
+{% block content %}
+<h1>Mon profil</h1>
+
+{% if current_user and current_user.is_authenticated %}
+    <p style="font-size: 18px; color: #4CAF50; font-weight: bold; text-align: center;">
+        Bienvenue, {{ current_user.username }}!
+    </p>
+    <p style="font-size: 25px; color: #000; text-align: center;">
+        Heureux de vous revoir; Profitez pleinement de votre lecteur de Mangas
+    </p>
+{% endif %}
+
+<div class="profile-container">
+    <h2>Mes favoris</h2>
+    <ul class="profile-list">
+        {% for fav in favorites %}
+            <li>
+                <a href="{{ url_for('manga', manga_name=fav.manga.name) }}">{{ fav.manga.name }}</a>
+            </li>
+        {% else %}
+            <li class="aucun">Aucun favori.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Mon historique de lecture</h2>
+    {% for entry in history %}
+      <p style="font-size: 16px; color: #333; margin-bottom: 10px;">
+        <span style="font-weight: bold;">{{ entry.manga.name }}</span> - 
+        <span style="font-style: italic;">{{ entry.chapter_name }}</span> 
+        (lu le <span style="color: #888;">{{ entry.last_read_at|datetimeformat }}</span>)
+      </p>
+      {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('delete_account') }}" class="btn btn-danger" style="margin-top:20px; margin-left: 100px;">Supprimer mon compte</a>
+</div>
+{% endblock %}

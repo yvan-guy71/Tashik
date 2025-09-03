@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Tashika - Mangas en ligne{% endblock %}
+
+{% block content %}
+
+<div class="index-header-content">
+    <!-- 🔎 Barre de recherche optimisée -->
+    <form method="get" action="{{ url_for('index') }}" class="search-form">
+        <div class="search-container">
+            <input type="text" id="search-input" name="q" class="search-input" placeholder="Rechercher un manga" autocomplete="off">
+            <div id="autocomplete-list" class="autocomplete-items"></div>
+            <button type="submit" class="search-button">Rechercher</button>
+        </div>
+    </form>
+</div>
+
+{% if q %}
+<section class="search-results">
+    <h2>Résultats de la recherche</h2>
+    {% if mangas %}
+        <ul class="home-manga-list">
+            {% for manga in mangas %}
+            <li>
+                <a href="{{ url_for('manga', manga_name=manga.name) }}">
+                    <span class="manga-img-wrapper">
+                        <img src="{{ manga.cover }}" alt="cover" class="home-manga-cover">
+                        <span class="manga-title-overlay">{{ manga.name }}</span>
+                            <div class="manga-badges-row" style="position: absolute; top: 12px; left: 12px; transition: none;">
+                                {% if manga.is_hot_manual %}
+                                    <span class="badge badge-hot">HOT</span>
+                                {% endif %}
+                                {% if manga.is_hot_auto %}
+                                    <span class="badge badge-hot">HOT</span>
+                                {% endif %}
+                                {% if manga.is_new_manual %}
+                                    <span class="badge badge-new">NEW</span>
+                                {% endif %}
+                                {% if manga.is_new_auto %}
+                                    <span class="badge badge-new">NEW</span>
+                                {% endif %}
+                                {% if manga.is_top_manual %}
+                                    <span class="badge badge-top">TOP</span>
+                                {% endif %}
+                                {% if manga.is_top_auto %}
+                                    <span class="badge badge-top">TOP</span>
+                                {% endif %}
+                            </div>
+                    </span>
+                    <span class="nb-chapitres">#{{ manga.nb_chapitres }} chapitres disponibles</span>
+                    {% if manga.date_added %}
+                        <span class="manga-date-added">
+                          Mis à jour le {{ manga.date_added|datetimeformat }}
+                        </span>
+                    {% endif %}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <span class="aucun">Aucun manga trouvé pour « {{ q }} ».</span>
+    {% endif %}
+</section>
+{% endif %}
+
+<!-- 🚀 Section des mangas populaires -->
+{% if not q and popular_mangas %}
+<section class="manga-section">
+    <h2 style="display: flex; align-items: center; gap: 18px; color: rgb(27, 27, 27); font-style: sans-serif;">
+        <span style="color: #181717ff; font-size: 1em;">
+            <i class="fas fa-stream"></i>
+        </span>
+        Mangas Populaires (Les plus Lus)
+    </h2>
+    <div style="display: flex; align-items: flex-start; gap: 32px;">
+        <div id="popular-mangas-carousel" class="popular-mangas-carousel">
+            {% for manga_item in popular_mangas %}
+            <div class="carousel-slide{% if loop.first %} active{% endif %}">
+                <a href="{{ url_for('manga', manga_name=manga_item.name) }}">
+                    <span class="manga-img-wrapper" style="position: relative;">
+                        <img src="{{ manga_item.cover }}" alt="cover" class="home-manga-cover">
+                        <span class="manga-title-overlay">{{ manga_item.name }}</span>
+                        <div class="manga-badges-row" style="position: absolute; top: 12px; left: 12px; transition: none;">
+                            {% if manga_item.is_hot_manual %}<span class="badge badge-hot">HOT</span>{% endif %}
+                            {% if manga_item.is_new_manual %}<span class="badge badge-new">NEW</span>{% endif %}
+                            {% if manga_item.is_top_manual %}<span class="badge badge-top">TOP</span>{% endif %}
+                        </div>
+                    </span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Conteneur du message de bienvenue -->
+        {% if not q %}
+        <div class="welcome-container">
+            <h3>Bienvenue sur Tashika !</h3>
+            <br>Découvrez, lisez et partagez vos mangas préférés.
+            Utilisez la recherche ou parcourez les sections pour trouver votre prochain coup de cœur ❤!</br> 
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+{% if not q and mangas_recents %}
+<section class="mangas-recents">
+    <h2 style="display: flex; align-items: center; gap: 16px; color: rgb(27, 27, 27); font-style: sans-serif; margin-bottom: 25px;">
+        <span style="color: #181717ff; font-size: 1em;">
+            <i class="fas fa-clock"></i>
+        </span>
+        Mangas récemment ajoutés
+    </h2>
+    <ul class="home-manga-list">
+        {% for manga in mangas_recents %}
+        <li>
+            <a href="{{ url_for('manga', manga_name=manga.name) }}">
+                <span class="manga-img-wrapper">
+                    <img src="{{ manga.cover }}" alt="cover" class="home-manga-cover">
+                    <span class="manga-title-overlay">{{ manga.name }}</span>
+                    <div class="manga-badges-row" style="position: absolute; top: 12px; left: 12px; transition: none;">
+                        {% if manga.is_hot_manual %}
+                            <span class="badge badge-hot">HOT</span>
+                        {% endif %}
+                        {% if manga.is_hot_auto %}
+                                <span class="badge badge-hot">HOT</span>
+                            {% endif %}
+                            {% if manga.is_new_manual %}
+                                <span class="badge badge-new">NEW</span>
+                            {% endif %}
+                            {% if manga.is_new_auto %}
+                                <span class="badge badge-new">NEW</span>
+                            {% endif %}
+                            {% if manga.is_top_manual %}
+                                <span class="badge badge-top">TOP</span>
+                            {% endif %}
+                            {% if manga.is_top_auto %}
+                                <span class="badge badge-top">TOP</span>
+                            {% endif %}
+                        </div>
+                    </span>
+                </span>
+                <span class="nb-chapitres">#{{ manga.nb_chapitres }} chapitres disponibles</span>
+                {% if manga.date_added %}
+                    <span class="manga-dated-added">
+                      Mis à jour le {{ manga.date_added|datetimeformat }}
+                </span>
+                {% endif %}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+<section class="manga-section">
+    <h2 style="display: flex; align-items: center; gap: 20px; color: rgb(27, 27, 27); font-style: sans-serial;"> <!-- Augmenté le gap pour plus d'espace -->
+        <span style="color: #181717ff; font-size: 1em;">
+            <i class="fas fa-book-open"></i>
+        </span>
+        Chapitres nouvellement ajoutés
+    </h2>
+    <ul class="recent-chapters-list" style="list-style: none; padding: 0; color: #181717ff;">
+        {% for chap in recent_chapters %}
+        <li class="recent-chapter-row">
+            <div class="recent-chapter-main">
+                <i class="fa fa-book" aria-hidden="true" style="color: #181717ff; font-size: 16px; margin-right: 6px;"></i>
+                <a href="{{ url_for('manga', manga_name=chap.manga_name) }}" style="margin-right: 6px;">
+                    <span class="manga-name-hover">{{ chap.manga_name }}</span>
+                </a>
+                <a href="{{ url_for('reader', manga_name=chap.manga_name, chapter_name=chap.chapter_folder) }}">
+                    <span class="chapter-name-hover">#{{ chap.chapter_folder }}.</span>
+                    <a>
+                    {% if chap.is_hot_auto %}
+                    <span class="badge badge-hot">HOT</span>
+                    {% endif %}
+                    {% if chap.is_new_auto %}
+                    <span class="badge badge-new">NEW</span>
+                    {% endif %}
+                    {% if chap.is_top_auto %}
+                    <span class="badge badge-top">TOP</span>
+                    {% endif %}
+                </a>
+            </div>
+            <span class="chapter-date">
+                Ajouté le {{ chap.date_added|datetimeformat }}
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+</div>
+<script>
+const searchInput = document.getElementById('search-input');
+const autocompleteList = document.getElementById('autocomplete-list');
+
+searchInput.addEventListener('input', function() {
+    const query = this.value;
+    if (!query) {
+        autocompleteList.innerHTML = "";
+        return;
+    }
+    fetch(`/autocomplete?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            autocompleteList.innerHTML = "";
+            data.results.forEach(name => {
+                const item = document.createElement('div');
+                item.className = "autocomplete-item";
+                // Crée un lien vers la page du manga
+                const link = document.createElement('a');
+                link.href = `/manga/${encodeURIComponent(name)}`;
+                link.textContent = name;
+                link.style.color = 'inherit';
+                link.style.textDecoration = 'none';
+                item.appendChild(link);
+                autocompleteList.appendChild(item);
+            });
+        });
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target !== searchInput) {
+        autocompleteList.innerHTML = "";
+    }
+});
+</script>
+{% endblock %}

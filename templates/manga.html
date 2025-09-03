@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}{{ manga_name }}{% endblock %}
+{% block content %}
+<div class="manga-main-container">
+    <div class="manga-flex">
+        <div class="manga-cover-col">
+            <img src="{{ manga.cover }}" alt="Cover de {{ manga.name }}" class="cover-img">
+        </div>
+        <div class="manga-info">
+            <p class="informations">Informations</p>
+            <ul>
+                <li><strong>Status :</strong>
+                    {% if manga.is_hot_manual %}<span class="badge badge-hot">HOT</span>{% endif %}
+                    {% if manga.is_hot_auto %}<span class="badge badge-hot">HOT</span>{% endif %}
+                    {% if manga.is_new_manual %}<span class="badge badge-new">NEW</span>{% endif %}
+                    {% if manga.is_new_auto %}<span class="badge badge-new">NEW</span>{% endif %}
+                    {% if manga.is_top_manual %}<span class="badge badge-top">TOP</span>{% endif %}
+                    {% if manga.is_top_auto %}<span class="badge badge-top">TOP</span>{% endif %}
+                </li>
+                <li><strong>État :</strong> {{ manga.status|default("Inconnu", true) }}</li>
+                <li>
+                  <strong>Type :</strong>
+                  <a href="{{ url_for('annuaire', categorie=manga.category) }}" class="category-link" style= "color: #007bff;" onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">
+                    {{ manga.category }}
+                  </a>
+                </li>
+                <li><strong>Auteur :</strong>
+                  <a class="manga-author" style="color: #ff002bff;" onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';">{{ manga.author|default("Inconnu", true) }}</a>
+                </li>
+                <li><strong>Année :</strong> {{ manga.year|default("?", true) }}</li>
+                <li><strong>Note :</strong> {{ avg_rating }}/5 </li>
+                <li><strong>Nombre de chapitres :</strong> {{ chapters|length }}</li>
+                <li><strong>Nombres de vues :</strong> 
+                    <i class="fas fa-eye"></i> 
+                    <a class="manga-views" style="color: #000; font-weight: 400; text-decoration: none;">{{ manga.views|default(0, true) }}</a>
+
+                            </ul>
+                            {% if current_user.is_authenticated %}
+                              <form method="post" action="{{ url_for('toggle_favorite', manga_name=manga.name) }}" style="margin-top: 10px;">
+                                {% if manga.is_favorite %}
+                                  <button type="submit" class="btn btn-warning" style="border-radius: 20px; padding: 7px 15px; font-weight: left: 55px;">Retirer des favoris</button>
+                                {% else %}
+                                  <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 7px 15px; font-weight: 600; left: 55px;">Ajouter aux favoris</button>
+                                {% endif %}
+                              </form>
+                            {% endif %}
+        </div>
+    </div>
+    <strong>Synopsis :</strong>
+    <p class="syllabus">
+        {% if manga.syllabus %}
+            {{ manga.syllabus }}
+        {% else %}
+            <span class="no-synopsis">Pas de synopsis disponible.</span>
+        {% endif %}
+    </p>
+</div>
+
+<p class="upload-chapter">Chapitres disponibles :</p>
+{% if chapters %}
+<ul class="chapter-list">
+    {% for chapter in chapters %}
+        <li>
+            <div style="display: flex; align-items: center; gap: 10px; color: #000;">
+                <i class="fas fa-book" style="color: #000; font-size: 18px;"></i>
+                <a class="manga-name-hover" href="{{ url_for('reader', manga_name=manga_name, chapter_name=chapter.folder) }}">
+                    {% if chapter.is_hot_auto %}
+                        <span class="badge badge-hot">HOT</span>
+                    {% endif %}
+                    {{ chapter.display }}
+                </a>
+                {% if chapter.is_new_auto %}
+                    <span class="badge badge-new">NEW</span>
+                {% endif %}
+                {% if chapter.is_top_auto %}
+                    <span class="badge badge-top">TOP</span>
+                {% endif %}
+                {% if chapter.is_read %}
+                    <span style="color: green; font-weight: bold;">(Lu)</span>
+                {% endif %}
+            </div>
+            {% if chapter.date_added %}
+                <span class="chapter-date">
+                    Ajouté le {{ chapter.date_added|datetimeformat }}
+                </span>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="no-chapters">Aucun chapitre disponible pour ce manga.</p>
+{% endif %}
+
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+        <a class="pagination-btn" href="{{ url_for('manga', manga_name=manga_name, page=page-1) }}">Précédent</a>
+    {% endif %}
+    <span>Page {{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+        <a class="pagination-btn" href="{{ url_for('manga', manga_name=manga_name, page=page+1) }}">Suivant</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="rating-comments-section">
+    <div class="rating-section">
+        <div class="rating-average-box">
+            <h4>Note moyenne :</h4>
+            <div class="rating-average">
+                {% if manga.ratings %}
+                    {{ (manga.ratings|map(attribute='value')|sum / manga.ratings|length)|round(1) }}/5
+                {% else %}
+                    Non noté
+                {% endif %}
+            </div>
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('rate_manga', manga_name=manga_name) }}" class="rating-form">
+                <label for="rating">Note :</label>
+                <input type="number" name="rating" id="rating" step="0.1" min="0" max="5" required>
+                <button type="submit" class="btn btn-primary btn-sm" style="border-radius: 8px;">Envoyer</button>
+            </form>
+            {% else %}
+            <p><a href="{{ url_for('login') }}" class="login-action-link">Connectez-vous pour noter ce manga.</a></p>
+            {% endif %}
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                {% if category in ['success', 'danger'] %}
+                  <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+    </div>
+    <div class="comment-leave-section">
+        {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('add_comment', manga_name=manga_name) }}" class="comment-form">
+            <label for="comment-content">Votre commentaire :</label>
+            <textarea name="content" id="comment-content" required></textarea>
+            <button type="submit" class="nav-link">Envoyer</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="comments-section">
+    <div class="comments-header-row">
+        <h3 style="color: #2c4e50; font-size: 24px; font-weight: bold; margin-bottom: 10px;">
+            <i class="fas fa-comments" style="color: #2c4e50; margin-right: 8px;"></i> Commentaires
+        </h3>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('login') }}" class="login-action-link comment-login-link">
+                Connectez-vous pour laisser un commentaire.
+            </a>
+        {% endif %}
+    </div>
+   <ul class="comments-list">
+    {% for comment in manga.comments %}
+        <li>
+            <span class="comment-author">
+            <i class="fas fa-user" style="color: #2c4e50;"></i> 
+            {% if comment.user and comment.user.username %}{{ comment.user.username }}{% else %}Utilisateur inconnu{% endif %}
+            </span>
+            <span class="comment-date">
+            <i class="fas fa-calendar-alt"></i> ({{ comment.created_at.strftime('%d/%m/%Y') }})
+            </span><br>
+            <i class="fas fa-comment" style="color: #2c4e50;"></i> {{ comment.content }}
+            <form method="post" action="{{ url_for('like_comment', comment_id=comment.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-light btn-sm" title="J'aime" style="border-radius: 8px; color: #2c4e50;">
+            <i class="fas fa-thumbs-up"></i>
+              </button> {{ comment.likes }}
+            </form>
+            <form method="post" action="{{ url_for('dislike_comment', comment_id=comment.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-light btn-sm" title="Je n'aime pas" style="border-radius: 8px; color: #2c4e50;">
+            <i class="fas fa-thumbs-down"></i>
+              </button> {{ comment.dislikes }}
+            </form>
+            <form method="post" action="{{ url_for('report_comment', comment_id=comment.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-light btn-sm" title="Signaler" style="border-radius: 8px; color: #2c4e50;">
+            <i class="fas fa-flag" style="color: #5c1a1aff;"></i>
+              </button>
+            </form>
+            {% if comment.reported %}
+            <span style="color:red;">
+                <i class="fas fa-exclamation-triangle" style="color: red;"></i> Signalé
+            </span>
+            {% endif %}
+        </li>
+    {% else %}
+        <li><em>Aucun commentaire pour ce manga.</em></li>
+    {% endfor %}
+</ul>
+</div>
+{% if current_user.is_admin %}
+    <a href="{{ url_for('admin_manga_status', manga_name=manga.name) }}" class="btn btn-light">Modifier les statuts</a>
+{% endif %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const flashes = document.querySelectorAll(".flash");
+        flashes.forEach(flash => {
+            setTimeout(() => {
+                flash.style.opacity = "0";
+                setTimeout(() => {
+                    flash.style.display = "none";
+                }, 500); // Temps pour la transition
+            }, 3000); // Disparaît après 3 secondes
+        });
+    });
+</script>
+{% endblock %}

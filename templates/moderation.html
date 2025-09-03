@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Modération{% endblock %}
+{% block content %}
+<h2 style="font-family: Arial, sans-serif; color: #333; text-align: center; margin-bottom: 20px;">Commentaires signalés</h2>
+<ul style="list-style-type: none; padding: 0;">
+  {% for comment in comments %}
+    <li style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; padding: 15px;">
+      <strong style="font-size: 1.1em; color: #555;">{{ comment.user.username if comment.user else "Utilisateur inconnu" }}</strong>
+      <span style="font-size: 0.9em; color: #999;">({{ comment.created_at.strftime('%d/%m/%Y') }})</span><br>
+      <p style="margin: 10px 0; color: #444;">{{ comment.content }}</p>
+      <form method="post" action="{{ url_for('delete_comment', comment_id=comment.id) }}" style="display:inline;">
+        <button type="submit" onclick="return confirm('Supprimer ce commentaire ?')" style="background-color: #e74c3c; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">
+          Supprimer
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('ignore_report', comment_id=comment.id) }}" style="display:inline;">
+        <button type="submit" style="background-color: #3498db; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">
+          Ignorer le signalement
+        </button>
+      </form>
+    </li>
+  {% else %}
+    <li style="text-align: center; color: #777; font-style: italic;">Aucun commentaire signalé.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

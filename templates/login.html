@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Authentification{% endblock %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <!-- Section pour afficher les messages flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Connexion</button>
+            <button class="auth-tab" data-tab="register">Inscription</button>
+        </div>
+        <div class="auth-forms">
+            <!-- Formulaire de connexion -->
+            <form method="post" class="auth-form login-form" id="login-form">
+                {{ login_form.hidden_tag() }}
+                <input type="hidden" name="form_type" value="login"> <!-- Champ caché pour identifier le formulaire -->
+                <div class="form-group">
+                    {{ login_form.username.label }}
+                    {{ login_form.username(class="form-input", placeholder="Email ou Nom d'utilisateur") }}
+                </div>
+                <div class="form-group">
+                    {{ login_form.password.label }}
+                    {{ login_form.password(class="form-input", placeholder="Mot de passe") }}
+                </div>
+                <a href="{{ url_for('forgot_password') }}" class="forgot-password-link">Mot de passe oublié ?</a>
+                <button type="submit" class="auth-buttons">Connexion</button>
+            </form>
+            <!-- Formulaire d'inscription -->
+            <form method="post" class="auth-form register-form" id="register-form" style="display: none;">
+                {{ register_form.hidden_tag() }}
+                <input type="hidden" name="form_type" value="register"> <!-- Champ caché pour identifier le formulaire -->
+                <div class="form-group">
+                    {{ register_form.username.label }}
+                    {{ register_form.username(class="form-input", placeholder="Nom d'utilisateur") }}
+                </div>
+                <div class="form-group">
+                    {{ register_form.email.label }}
+                    {{ register_form.email(class="form-input", placeholder="Adresse email") }}
+                </div>
+                <div class="form-group">
+                    {{ register_form.password.label }}
+                    {{ register_form.password(class="form-input", placeholder="Mot de passe") }}
+                </div>
+                <button type="submit" class="auth-buttons" style="margin-top: 20px; color: #fff;">S'inscrire</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Gestion des onglets
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.auth-tab');
+        const forms = document.querySelectorAll('.auth-form');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                forms.forEach(f => f.style.display = 'none');
+
+                this.classList.add('active');
+                document.getElementById(`${this.dataset.tab}-form`).style.display = 'block';
+            });
+        });
+    });
+</script>
+{% endblock %}

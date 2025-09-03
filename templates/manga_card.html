@@ -1,0 +1,9 @@
+<div class="manga-item">
+    <a href="{{ url_for('manga', manga_name=manga_item['name']) }}">
+        <span class="manga-img-wrapper">
+            <img src="{{ manga_item['cover'] or url_for('static', filename='default-cover.jpg') }}" alt="Cover de {{ manga_item['name'] }}" class="home-manga-cover">
+            <span class="manga-title-overlay">{{ manga_item.name }}</span>
+        </span>
+        <span class="nb-chapitres">{{ manga_item.nb_chapitres }} Chapitres disponibles</span>
+    </a>
+</div>

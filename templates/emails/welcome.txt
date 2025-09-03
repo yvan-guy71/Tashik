@@ -1,0 +1,6 @@
+Bienvenue {{ user.username }} !
+
+Merci de vous être inscrit sur {{ site_name }}.
+Vous pouvez maintenant vous connecter et profiter de tous les mangas.
+
+À bientôt sur {{ site_name }} !

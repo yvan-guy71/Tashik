@@ -1,0 +1,21 @@
+<form method="post">
+    <h2>Modifier les statuts du manga : {{ manga.name }}</h2>
+    <label>
+        <input type="checkbox" name="is_hot" {% if manga.is_hot %}checked{% endif %}> HOT
+    </label>
+    <label>
+        <input type="checkbox" name="is_new" {% if manga.is_new %}checked{% endif %}> NEW
+    </label>
+    <label>
+        <input type="checkbox" name="is_top" {% if manga.is_top %}checked{% endif %}> TOP
+    </label>
+
+<form method="post">
+    <label for="status">État :</label>
+        <select name="status" id="status">
+            <option value="En cours" {% if manga.status == "En cours" %}selected{% endif %}>En cours</option>
+            <option value="Terminé" {% if manga.status == "Terminé" %}selected{% endif %}>Terminé</option>
+        </select>
+    </label>
+    <button type="submit">Enregistrer</button>
+</form>

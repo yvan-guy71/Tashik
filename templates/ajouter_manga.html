@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un manga</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+    <div class="add-manga-container">
+        <h1 class="add-manga-title">Ajouter un nouveau manga</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        <form method="post" enctype="multipart/form-data" class="add-manga-form">
+            <div class="form-group">
+                <label for="name">Titre :</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Auteur :</label>
+                <input type="text" id="author" name="author">
+            </div>
+            <div class="form-group">
+                <label for="year">Année :</label>
+                <input type="text" id="year" name="year">
+            </div>
+            <div class="form-group">
+                <label for="category">Catégorie :</label>
+                <input type="text" id="category" name="category">
+            </div>
+            <div class="form-group">
+                <label for="syllabus">Résumé :</label>
+                <textarea id="syllabus" name="syllabus" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="cover">Couverture :</label>
+                <input type="file" id="cover" name="cover" accept="image/*">
+            </div>
+            <button type="submit" class="add-manga-btn">Ajouter</button>
+        </form>
+        <a href="{{ url_for('index') }}" class="back-link">Retour à l'accueil</a>
+    </div>
+
+    <style>
+    .add-manga-container {
+        max-width: 480px;
+        margin: 40px auto 0 auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(44,78,80,0.08);
+        padding: 32px 28px 28px 28px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .add-manga-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c4e50;
+        margin-bottom: 24px;
+    }
+    .add-manga-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    .form-group label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: #2c4e50;
+    }
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #b3ebf5;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 2px;
+        background: #f8fafd;
+    }
+    .form-group textarea {
+        resize: vertical;
+    }
+    .add-manga-btn {
+        background: linear-gradient(90deg, #2c4e50 70%, #00cfff 100%);
+        color: #fff;
+        padding: 12px 0;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 8px;
+    }
+    .add-manga-btn:hover {
+        background: linear-gradient(90deg, #00cfff 70%, #2c4e50 100%);
+    }
+    .back-link {
+        display: block;
+        margin-top: 18px;
+        color: #2c4e50;
+        text-decoration: none;
+        font-size: 1em;
+        transition: color 0.2s;
+        text-align: center;
+    }
+    .back-link:hover {
+        color: #00cfff;
+    }
+    </style>
+</body>
+</html>

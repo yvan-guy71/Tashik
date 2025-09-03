@@ -1,0 +1,95 @@
+<!-- filepath: c:\Users\ORDI\Desktop\Programmation\flask\templates\delete_account.html -->
+{% extends "base.html" %}
+{% block title %}Supprimer mon compte{% endblock %}
+{% block content %}
+<div class="delete-account-container">
+    <h3 class="delete-title">Supprimer mon compte</h3>
+    <div class="delete-alert">
+        <span>⚠️</span>
+        <span>
+            Cette action est <strong>irréversible</strong>.<br>
+            Toutes vos données seront supprimées.<br>
+            <b>Désolé de vous voir nous quitter, revenez vite!</b>
+        </span>
+    </div>
+    <form method="post" class="delete-form">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.password.label(class="delete-label") }}
+            {{ form.password(size=45, class="delete-input", placeholder="Entrez votre mot de passe", required=True) }}
+        </div>
+        <button type="submit" class="delete-btn"
+            onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')">
+            Supprimer mon compte
+        </button>
+    </form>
+</div>
+<style>
+.delete-account-container {
+    max-width: 500px;
+    margin: 40px auto 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 32px 28px 28px 28px;
+}
+.delete-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    color: #222;
+}
+.delete-alert {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 8px;
+    padding: 18px 16px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.08rem;
+}
+.delete-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.delete-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+.delete-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+.delete-btn {
+    background: linear-gradient(90deg, #e74c3c 70%, #c0392b 100%);
+    color: #fff;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+.delete-btn:hover {
+    background: linear-gradient(90deg, #c0392b 70%, #e74c3c 100%);
+}
+</style>
+{% endblock %}

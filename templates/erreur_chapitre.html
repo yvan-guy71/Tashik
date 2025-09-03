@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Page d'erreur{% endblock %}
+{% block content %}
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;">
+    <h1 style="font-size:7em;font-weight:300;letter-spacing:2px;margin-bottom:0;">404</h1>
+    <div style="font-size:2em;color:#666;margin-bottom:24px;">Page Not Found</div>
+    <p style="color:#888;font-size:1.1em;margin-bottom:32px;">
+        Le chapitre demandé n'existe pas ou ne contient aucune page.<br>
+    </p>
+    <a href="{{ url_for('manga', manga_name=manga_name) }}" class="nav-link" style="color: #007bff; text-decoration: none;">Retour au manga</a>
+</div>
+{% endblock %}
