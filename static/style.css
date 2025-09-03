@@ -3685,7 +3685,10 @@ a.login-action-link:hover {
 @media (max-width: 360px) {
     h1 { font-size: 1.4rem; }
     .home-manga-list { grid-template-columns: repeat(2, 1fr); }
+
 }
+
+
 
 
 /* ---------- Inserted consolidated media queries ---------- */
@@ -3893,7 +3896,7 @@ a.login-action-link:hover {
     }
     
     .home-manga-list {
-        gap: 10px;
+        gap: 15px;
         justify-content: center;
     }
     
@@ -4016,6 +4019,58 @@ a.login-action-link:hover {
     .manga-info {
         padding: 0;
         align-items: center;
+    }
+    .annuaire-filters select {
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto; /* Center horizontally */
+        text-align: center; /* Center text inside the select */
+        margin-bottom: 20px;
+
+    }
+    .login-links {
+        margin-top: 27px;
+    }
+    .popular-mangas-carousel {
+        display: flex;
+        gap: 44px; /* Augmenter l'espace entre les covers */
+        overflow-x: auto;
+        padding: 12px 0;
+    }
+    .manga-info {
+        padding: 0;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .chapter-nav-link {
+        font-size: 0.6em;
+        padding: 2px 4px;
+        margin-top: 10px;
+        width: 100%;
+        margin: 0 auto;
+        
+    }
+    .chapter-nave-link {
+        width: 100%;
+        font-size: 0.6em;
+        padding: 2px 4px;
+        margin-top: 10px;
+        margin: 0 auto;
+        margin-bottom: 10px;
+    }
+    .chapter-select-dropdown {
+        width: 50%;
+        font-size: 0.7em;
+        padding: 2px 4px;
+        margin-right: -20px;
+    }
+    .nav-links {
+        display: flex;
+        justify-content: center;
+        gap: 2px;
     }
 }
 
@@ -4322,4 +4377,4 @@ a.login-action-link:hover {
     h1 { font-size: 1.4rem; }
     .home-manga-list { grid-template-columns: repeat(2, 1fr); }
 }
-
+   
