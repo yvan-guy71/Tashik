@@ -25,7 +25,7 @@ class Manga(db.Model):
     status = db.Column(db.String(20), default="En cours")
     chapters = db.relationship('Chapter', backref='manga', lazy=True)
     ratings = db.relationship('Rating', backref='manga', lazy=True)
-    comments = db.relationship('Comment', lazy=True)
+    comments = db.relationship('Comment', backref='manga', lazy=True)
     favorites = db.relationship('Favorite', backref='manga', lazy=True)
     histories = db.relationship('ReadingHistory', lazy=True)
     
