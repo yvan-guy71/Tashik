@@ -163,7 +163,7 @@
         <li>
             <span class="comment-author">
             <i class="fas fa-user" style="color: #2c4e50;"></i> 
-            {% if comment.user and comment.user.username %}{% else %}Utilisateur inconnu{% endif %}
+            {% if comment.user and comment.user.username %}{{ comment.user.username }}{% else %}Utilisateur inconnu{% endif %}
             </span>
             <span class="comment-date">
             <i class="fas fa-calendar-alt"></i> ({{ comment.created_at.strftime('%d/%m/%Y') }})
