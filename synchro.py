@@ -12,7 +12,8 @@ def safe_read(path, default=""):
         return default
 
 def parse_date_to_timestamp(s, default=0):
-    """Convertit plusieurs formats de date en timestamp (int).
+    """Convertit plusieurs formats de da
+    te en timestamp (int).
     Accepté : timestamp int, ISO, 'DD-MM-YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD', et variantes avec time.
     Retourne `default` si la conversion échoue.
     """

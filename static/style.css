@@ -3452,7 +3452,7 @@ a.login-action-link:hover {
     }
     
     .reader-image {
-        max-width: 100%;
+        max-width: auto;
         height: auto;
     }
     

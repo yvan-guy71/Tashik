@@ -135,6 +135,14 @@ def compute_badges(manga):
 def utility_processor():
     return dict(get_cover_url=get_cover_url)
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route("/")
 def index():
     source = get_source()
@@ -244,8 +252,9 @@ def index():
         source=source
     )
 
-
 @app.route('/ajouter_chapitre/<manga_name>', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def ajouter_chapitre_db(manga_name):
     source = get_source()
     if source == "db":
@@ -265,23 +274,36 @@ def ajouter_chapitre_db(manga_name):
             # Crée le fichier date_added.txt
             with open(os.path.join(chapter_dir, "date_added.txt"), "w") as f:
                 f.write(str(date_added))
-            flash("Chapitre ajouté à la base de données et dossier créé !", "success")
+            # Ajoute les images au dossier du chapitre
+            images = request.files.getlist('images')
+            for image in images:
+                if image and image.filename:
+                    filename = secure_filename(image.filename)
+                    image.save(os.path.join(chapter_dir, filename))
+            flash("Chapitre ajouté à la base de données avec images et dossier créé !", "success")
             return redirect(url_for('manga', manga_name=manga_name, source='db'))
         return render_template('ajouter_chapitre.html', manga=manga)
     else:
         if request.method == 'POST':
             chapter_name = request.form['chapter_name']
             ajouter_chapitre(manga_name, chapter_name)
-            flash("Chapitre ajouté dans les fichiers !", "success")
+            # Ajoute les images au dossier du chapitre
+            chapter_dir = os.path.join(MANGAS_DIR, manga_name, chapter_name)
+            images = request.files.getlist('images')
+            for image in images:
+                if image and image.filename:
+                    filename = secure_filename(image.filename)
+                    image.save(os.path.join(chapter_dir, filename))
+            flash("Chapitre ajouté dans les fichiers avec images !", "success")
             return redirect(url_for('manga', manga_name=manga_name, source='fs'))
         return render_template(
             'ajouter_chapitre.html', 
-            manga_name=manga_name,
-            new_chapter_added=True,
-            new_chapter_name=chapter_name,
-            )
+            manga_name=manga_name
+        )
 
 @app.route('/ajouter_manga', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def ajouter_manga():
     source = get_source()
     if request.method == 'POST':
@@ -1161,14 +1183,6 @@ def toggle_hot(manga_name):
         flash(f"Le manga '{manga_name}' n'est plus marqué comme Hot.", "success")
     return redirect(url_for('manga', manga_name=manga_name))
 
-
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not getattr(current_user, "is_admin", False):
-            abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
 
 @app.route('/comment/<int:comment_id>/like', methods=['POST'])
 @login_required
