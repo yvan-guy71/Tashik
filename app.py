@@ -1228,6 +1228,7 @@ def report_comment(comment_id):
 @admin_required
 def moderation():
     reported_comments = Comment.query.filter_by(reported=True).order_by(Comment.created_at.desc()).all()
+    flash("Section de modération - Gérez les commentaires signalés.", "info")
     return render_template('moderation.html', comments=reported_comments)
 
 @app.route('/comment/<int:comment_id>/delete', methods=['POST'])

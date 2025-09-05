@@ -2,6 +2,8 @@
 {% block title %}Modération{% endblock %}
 {% block content %}
 <h2 style="font-family: Arial, sans-serif; color: #333; text-align: center; margin-bottom: 20px;">Commentaires signalés</h2>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
     <div class="flash-messages" style="margin-bottom: 20px;">
       {% for category, message in messages %}
         <div class="flash flash-{{ category }}" style="padding: 10px; border-radius: 5px; margin-bottom: 10px; {% if category == 'success' %}background-color: #d4edda; color: #155724;{% elif category == 'error' %}background-color: #f8d7da; color: #721c24;{% else %}background-color: #cce5ff; color: #004085;{% endif %}">
@@ -9,6 +11,8 @@
         </div>
       {% endfor %}
     </div>
+  {% endif %}
+{% endwith %}
 <ul style="list-style-type: none; padding: 0;">
   {% for comment in comments %}
     <li style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; padding: 15px;">
