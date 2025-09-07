@@ -267,7 +267,8 @@ def ajouter_chapitre_db(manga_name):
             date_added = int(time.time())
             chapter = Chapter(name=chapter_name, manga_id=manga.id, date_added=date_added)
             db.session.add(chapter)
-            db.session.commit()
+            db.session.flush()  # Pour obtenir l'ID si besoin
+
             # Crée le dossier physique pour le chapitre
             chapter_dir = os.path.join(MANGAS_DIR, manga.name, chapter_name)
             os.makedirs(chapter_dir, exist_ok=True)
@@ -276,10 +277,15 @@ def ajouter_chapitre_db(manga_name):
                 f.write(str(date_added))
             # Ajoute les images au dossier du chapitre
             images = request.files.getlist('images')
+            image_filenames = []
             for image in images:
                 if image and image.filename:
                     filename = secure_filename(image.filename)
                     image.save(os.path.join(chapter_dir, filename))
+                    image_filenames.append(filename)
+            # Enregistre la liste des images dans le champ
+            chapter.images = ";".join(image_filenames)  # ou json.dumps(image_filenames) si champ JSON
+            db.session.commit()
             flash("Chapitre ajouté à la base de données avec images et dossier créé !", "success")
             return redirect(url_for('manga', manga_name=manga_name, source='db'))
         return render_template('ajouter_chapitre.html', manga=manga)

@@ -39,11 +39,12 @@
     </div>
     <div id="page-mode" style="display: none;">
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
-            <img id="page-img" class="reader-img" src="{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=images[0]) }}" alt="Page 1" style="max-width:100vw;width:100%;height:auto;">
+            <!-- src initial vide: on remplira depuis JS pour éviter les problèmes d'encodage des URLs -->
+            <img id="page-img" class="reader-img" src="" alt="Page 1" style="max-width:100vw;width:100%;height:auto;">
             <div class="page-navigation">
-                <button onclick="prevPage()">Précédent</button>
+                <button type="button" onclick="prevPage()">Précédent</button>
                 <span id="page-number" class="page-number-display">1 / {{ images|length }}</span>
-                <button onclick="nextPage()">Suivant</button>
+                <button type="button" onclick="nextPage()">Suivant</button>
             </div>
         </div>
     </div>
@@ -55,29 +56,30 @@
 </div>
     </div>
 <script>
-    let images = [{% for image in images %}"{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=image) }}"{% if not loop.last %}, {% endif %}{% endfor %}];
+    // Sérialisation sécurisée des URLs d'images côté serveur -> JSON côté client
+    let images = [{% for f in images %}{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=f) | tojson }}{% if not loop.last %}, {% endif %}{% endfor %}];
     let currentPage = 0;
-
-    function setMode(mode) {
-        document.getElementById('scroll-mode').style.display = (mode === 'scroll') ? 'block' : 'none';
-        document.getElementById('page-mode').style.display = (mode === 'page') ? 'block' : 'none';
-    }
-
-    function showPage(idx) { 
-        if (idx < 0 || idx >= images.length) return;
-        currentPage = idx;
-        document.getElementById('page-img').src = images[currentPage];
-        document.getElementById('page-number').innerText = (currentPage+1) + " / " + images.length;
-    }
-
-    function prevPage() { showPage(currentPage-1); }
-    function nextPage() { showPage(currentPage+1); }
-
-    function updateThemeButtons() {
-        const isDark = document.body.classList.contains('dark-mode');
-        document.getElementById('dark-mode-toggle').style.display = isDark ? 'none' : 'inline-block';
-        document.getElementById('light-mode-toggle').style.display = isDark ? 'inline-block' : 'none';
-    }
+ 
+     function setMode(mode) {
+         document.getElementById('scroll-mode').style.display = (mode === 'scroll') ? 'block' : 'none';
+         document.getElementById('page-mode').style.display = (mode === 'page') ? 'block' : 'none';
+     }
+ 
+     function showPage(idx) { 
+         if (idx < 0 || idx >= images.length) return;
+         currentPage = idx;
+         document.getElementById('page-img').src = images[currentPage];
+         document.getElementById('page-number').innerText = (currentPage+1) + " / " + images.length;
+     }
+ 
+     function prevPage() { showPage(currentPage-1); }
+     function nextPage() { showPage(currentPage+1); }
+ 
+     function updateThemeButtons() {
+         const isDark = document.body.classList.contains('dark-mode');
+         document.getElementById('dark-mode-toggle').style.display = isDark ? 'none' : 'inline-block';
+         document.getElementById('light-mode-toggle').style.display = isDark ? 'inline-block' : 'none';
+     }
 
     function setTheme(dark) {
         if (dark) {

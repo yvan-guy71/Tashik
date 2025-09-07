@@ -34,7 +34,7 @@ class Chapter(db.Model):
     manga_id = db.Column(db.Integer, db.ForeignKey('manga.id'), nullable=False)
     name = db.Column(db.String(128), nullable=False)
     date_added = db.Column(db.Integer)  # timestamp
-    
+    images = db.Column(db.Text)  # JSON list of image filenames
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

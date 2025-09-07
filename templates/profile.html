@@ -23,16 +23,18 @@
             <li class="aucun">Aucun favori.</li>
         {% endfor %}
     </ul>
-
     <h2>Mon historique de lecture</h2>
     {% for entry in history %}
       <p style="font-size: 16px; color: #333; margin-bottom: 10px;">
-        <span style="font-weight: bold;">{{ entry.manga.name }}</span> - 
-        <span style="font-style: italic;">{{ entry.chapter_name }}</span> 
+        <a href="{{ url_for('manga', manga_name=entry.manga.name) }}" style="font-weight: bold; text-decoration: none; color: #000;">
+          {{ entry.manga.name }}
+        </a> - 
+        <a href="{{ url_for('reader', manga_name=entry.manga.name, chapter_name=entry.chapter_name) }}" style="font-style: italic; text-decoration: none; color: #555;">
+          {{ entry.chapter_name }}
+        </a> 
         (lu le <span style="color: #888;">{{ entry.last_read_at|datetimeformat }}</span>)
       </p>
-      {% endfor %}
-    </ul>
+    {% endfor %}
 
     <a href="{{ url_for('delete_account') }}" class="btn btn-danger" style="margin-top:20px; margin-left: 100px;">Supprimer mon compte</a>
 </div>
