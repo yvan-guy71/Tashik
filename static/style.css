@@ -3676,15 +3676,15 @@ a.login-action-link:hover {
         width: 150px;
     }
     .manga-name-hover {
-        font-size: 0.7em;
+        font-size: 0.9em;
         padding: 4px 6px;
     }
     .fa-book {
         display: none;
-        font-size: 0.7em;
+        font-size: 0.9em;
     }
     .badge {
-        font-size: 0.6em;
+        font-size: 0.8em;
         padding: 2px 4px;
         margin-left: 20px;
 
