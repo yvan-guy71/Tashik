@@ -3591,6 +3591,7 @@ a.login-action-link:hover {
     }
 }
 
+
 /* Very small / extra narrow */
 @media (max-width: 480px) {
     .manga-item,
@@ -3673,6 +3674,20 @@ a.login-action-link:hover {
 
     .manga-cover-col {
         width: 150px;
+    }
+    .manga-name-hover {
+        font-size: 0.7em;
+        padding: 4px 6px;
+    }
+    .fa-book {
+        display: none;
+        font-size: 0.7em;
+    }
+    .badge {
+        font-size: 0.6em;
+        padding: 2px 4px;
+        margin-left: 20px;
+
     }
 }
 
