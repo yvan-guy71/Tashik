@@ -189,28 +189,30 @@ def index():
             manga_dict["is_top_auto"] = auto_badges["is_top"]
 
             mangas_data.append(manga_dict)
-        chapters_db = Chapter.query.order_by(Chapter.date_added.desc()).limit(8).all()
+        now = datetime.utcnow()
+        chapters_db = Chapter.query.order_by(Chapter.date_added.desc()).limit(32).all()
         recent_chapters = []
         manga_ids = [chap.manga_id for chap in chapters_db]
         mangas_dict = {m.id: m for m in Manga.query.filter(Manga.id.in_(manga_ids)).all()}
 
         for chap in chapters_db:
-            manga = mangas_dict.get(chap.manga_id)
-            cover_path = os.path.join(MANGAS_DIR, manga.name, manga.cover_filename) if manga and manga.cover_filename else None
-            cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga and manga.cover_filename and cover_path and os.path.exists(cover_path) else url_for('static', filename='default-cover.jpg')
-            recent_chapters.append({
-                "manga_name": manga.name if manga else "",
-                "chapter_folder": chap.name,
-                "date_added": chap.date_added,
-                "cover": cover_url,
-                "chapter_title": chap.name,
-                "is_hot_auto": getattr(chap, "nb_lectures_recent", 0) > 100,
-                "is_new_auto": (datetime.utcnow() - datetime.fromtimestamp(chap.date_added)).days < 7 if chap.date_added else False,
-                # Ajoute aussi les badges manuels du manga
-                "is_hot_manual": manga.is_hot if manga else False,
-                "is_new_manual": manga.is_new if manga else False,
-                "is_top_manual": manga.is_top if manga else False,
-            })
+            if chap.date_added and (now - datetime.fromtimestamp(chap.date_added)).days < 7:
+                manga = mangas_dict.get(chap.manga_id)
+                cover_path = os.path.join(MANGAS_DIR, manga.name, manga.cover_filename) if manga and manga.cover_filename else None
+                cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga and manga.cover_filename and cover_path and os.path.exists(cover_path) else url_for('static', filename='default-cover.jpg')
+                recent_chapters.append({
+                    "manga_name": manga.name if manga else "",
+                    "chapter_folder": chap.name,
+                    "date_added": chap.date_added,
+                    "cover": cover_url,
+                    "chapter_title": chap.name,
+                    "is_hot_auto": getattr(chap, "nb_lectures_recent", 0) > 100,
+                    "is_new_auto": True,
+                    # Ajoute aussi les badges manuels du manga
+                    "is_hot_manual": manga.is_hot if manga else False,
+                    "is_new_manual": manga.is_new if manga else False,
+                    "is_top_manual": manga.is_top if manga else False,
+                })
     else:
         mangas_data = [
             _get_manga_details_from_fs(manga_name_fs)
@@ -498,17 +500,19 @@ def get_recent_chapters(limit=8):
     recent_chapters = []
 
     # 1. Récupération depuis la BDD
-    for chapter in Chapter.query.order_by(Chapter.date_added.desc()).limit(limit):
-        manga = chapter.manga  # relation SQLAlchemy
-        cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga.cover_filename else url_for('static', filename='default-cover.jpg')
-        recent_chapters.append({
-            "manga_name": manga.name,
-            "chapter_folder": chapter.name,
-            "date_added": chapter.date_added,
-            "cover": cover_url
-        })
-        
-        
+    now = datetime.utcnow()
+    # 1. Récupération depuis la BDD (on prend plus large pour filtrer ensuite)
+    for chapter in Chapter.query.order_by(Chapter.date_added.desc()).limit(limit * 4):
+        if chapter.date_added and (now - datetime.fromtimestamp(chapter.date_added)).days < 7:
+            manga = chapter.manga  # relation SQLAlchemy
+            cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga.cover_filename else url_for('static', filename='default-cover.jpg')
+            recent_chapters.append({
+                "manga_name": manga.name,
+                "chapter_folder": chapter.name,
+                "date_added": chapter.date_added,
+                "cover": cover_url
+            })
+
     seen = set((c["manga_name"], c["chapter_folder"]) for c in recent_chapters)
     for manga_name_fs in os.listdir(MANGAS_DIR):
         manga_dir = os.path.join(MANGAS_DIR, manga_name_fs)
@@ -533,12 +537,13 @@ def get_recent_chapters(limit=8):
                         date_added = int(f.read().strip())
                 except Exception:
                     date_added = 0
-                recent_chapters.append({
-                    "manga_name": manga_name_fs,
-                    "chapter_folder": chapter.name,
-                    "date_added": date_added,
-                    "cover": cover_url
-                })
+                if date_added and (now - datetime.fromtimestamp(date_added)).days < 7:
+                    recent_chapters.append({
+                        "manga_name": manga_name_fs,
+                        "chapter_folder": chapter_folder,
+                        "date_added": date_added,
+                        "cover": cover_url
+                    })
 
     # Trie et limite la liste finale
     recent_chapters = sorted(recent_chapters, key=lambda c: c["date_added"], reverse=True)[:limit]
@@ -548,22 +553,24 @@ def get_recent_chapters(limit=8):
 def derniers_chapitres():
     source = get_source()
     if source == "db":
-        chapters_db = Chapter.query.order_by(Chapter.date_added.desc()).limit(8).all()
+        now = datetime.utcnow()
+        chapters_db = Chapter.query.order_by(Chapter.date_added.desc()).limit(32).all()
         recent_chapters = []
         manga_ids = [chap.manga_id for chap in chapters_db]
         mangas_dict = {m.id: m for m in Manga.query.filter(Manga.id.in_(manga_ids)).all()}
 
         for chap in chapters_db:
-            manga = mangas_dict.get(chap.manga_id)
-            recent_chapters.append({
-                "manga_name": manga.name if manga else "",
-                "chapter_folder": chap.name,
-                "date_added": chap.date_added,
-                "cover": get_cover_url(manga.name) if manga else url_for('static', filename='default-cover.jpg'),
-                "chapter_title": chap.name,
-                "is_hot": hasattr(manga, "nb_lectures_recent") and manga.nb_lectures_recent > 100,
-                "is_new": (datetime.utcnow() - datetime.fromtimestamp(chap.date_added)).days < 7 if chap.date_added else False
-            })
+            if chap.date_added and (now - datetime.fromtimestamp(chap.date_added)).days < 7:
+                manga = mangas_dict.get(chap.manga_id)
+                recent_chapters.append({
+                    "manga_name": manga.name if manga else "",
+                    "chapter_folder": chap.name,
+                    "date_added": chap.date_added,
+                    "cover": get_cover_url(manga.name) if manga else url_for('static', filename='default-cover.jpg'),
+                    "chapter_title": chap.name,
+                    "is_hot": hasattr(manga, "nb_lectures_recent") and manga.nb_lectures_recent > 100,
+                    "is_new": True
+                })
     else:
         recent_chapters = get_recent_chapters()
     return render_template('derniers_chapitres.html', recent_chapters=recent_chapters)
