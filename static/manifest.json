@@ -1,7 +1,7 @@
 {
-  "name": "Tashika",
-  "short_name": "Tashika",
-  "description": "Tashika - Lecteur de mangas en ligne",
+  "name": "Yomi-Scan",
+  "short_name": "Yomi-Scan",
+  "description": "Yomi-Scan - Lecteur de mangas en ligne",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

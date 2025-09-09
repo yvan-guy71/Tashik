@@ -33,14 +33,14 @@
     <div id="scroll-mode" style="display: block;">
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
             {% for image in images %}
-                <img class="reader-img" src="{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=image) }}" alt="Page {{ loop.index }}" style="max-width:100vw;width:100%;height:auto;">
+                <img class="reader-img zoomable" src="{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=image) }}" alt="Page {{ loop.index }}" style="max-width:100vw;width:100%;height:auto;">
             {% endfor %}
         </div>
     </div>
     <div id="page-mode" style="display: none;">
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;">
             <!-- src initial vide: on remplira depuis JS pour éviter les problèmes d'encodage des URLs -->
-            <img id="page-img" class="reader-img" src="" alt="Page 1" style="max-width:100vw;width:100%;height:auto;">
+            <img id="page-img" class="reader-img zoomable" src="" alt="Page 1" style="max-width:100vw;width:100%;height:auto;">
             <div class="page-navigation">
                 <button type="button" onclick="prevPage()">Précédent</button>
                 <span id="page-number" class="page-number-display">1 / {{ images|length }}</span>
@@ -55,6 +55,34 @@
     </a>
 </div>
     </div>
+<style>
+.reader-img.zoomable {
+    transition: transform 0.2s;
+    cursor: zoom-in;
+    z-index: 1;
+}
+.reader-img.zoomable.zoomed {
+    transform: scale(1.8);
+    cursor: zoom-out;
+    z-index: 10;
+}
+/* Uniformité et collage en mode scroll */
+#scroll-mode .reader-img.zoomable {
+    display: block;
+    width: 100vw;
+    max-width: 100vw;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    object-fit: cover;
+}
+#scroll-mode > div {
+    gap: 0;
+}
+</style>
 <script>
     // Sérialisation sécurisée des URLs d'images côté serveur -> JSON côté client
     let images = [{% for f in images %}{{ url_for('manga_image', manga_name=manga_name, chapter_name=chapter_name, filename=f) | tojson }}{% if not loop.last %}, {% endif %}{% endfor %}];
@@ -93,6 +121,25 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
+        // Tap/clic simple pour zoomer/dézoomer
+        document.querySelectorAll('.reader-img.zoomable').forEach(function(img) {
+            let lastTap = 0;
+            img.addEventListener('click', function(e) {
+                img.classList.toggle('zoomed');
+            });
+            img.addEventListener('touchend', function(e) {
+                let now = new Date().getTime();
+                if (now - lastTap < 350) {
+                    // double tap = rien (évite conflit swipe)
+                } else {
+                    setTimeout(function() {
+                        if (!img.classList.contains('zoomed')) img.classList.add('zoomed');
+                        else img.classList.remove('zoomed');
+                    }, 150);
+                }
+                lastTap = now;
+            });
+        });
         showPage(0);
 
         // Appliquer le thème sauvegardé

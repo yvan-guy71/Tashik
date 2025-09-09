@@ -48,7 +48,7 @@ app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
 app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LekNZcrAAAAAOB4HoGwzg0Fdx3DysnW2EJDXEuY'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6LekNZcrAAAAAGJP2jvAad_UevJomx-SRriLUWak'
-app.config['SITE_NAME'] = os.getenv('SITE_NAME', 'Tashika')
+app.config['SITE_NAME'] = os.getenv('SITE_NAME', 'Yomi-Scan')
 
 
 
@@ -662,7 +662,7 @@ def contact():
             return redirect(url_for('contact'))
 
         msg = Message(
-            subject="Nouveau message d'un utilisateur de Tashika",
+            subject="Nouveau message d'un utilisateur de Yomi-Scan",
             sender=email,
             reply_to=email,
             recipients=[app.config['MAIL_USERNAME']],
@@ -748,7 +748,7 @@ def send_reset_email(user):
     reset_url = url_for('reset_password', token=token, created_at=created_at, _external=True)
     body = render_template('emails/reset_password.txt', user=user, site_name=app.config['SITE_NAME'], reset_url=reset_url)
     sender = f"{app.config['SITE_NAME']} <{app.config.get('MAIL_USERNAME')}>"
-    msg = Message('Réinitialisation du mot de passe - Tashika',
+    msg = Message('Réinitialisation du mot de passe - Yomi-Scan',
                   sender=sender,
                   recipients=[user.email])
     msg.body = body
@@ -760,7 +760,7 @@ def send_reset_email(user):
 def send_welcome_email(user):
     body = render_template('emails/welcome.txt', user=user, site_name=app.config['SITE_NAME'])
     sender = f"{app.config['SITE_NAME']} <{app.config.get('MAIL_USERNAME')}>"
-    msg = Message('Bienvenue sur Tashika',
+    msg = Message('Bienvenue sur Yomi-Scan',
                   sender=sender,
                   recipients=[user.email])
     msg.body = body
