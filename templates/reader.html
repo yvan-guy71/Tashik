@@ -67,20 +67,23 @@
     z-index: 10;
 }
 /* Uniformité et collage en mode scroll */
+/* Uniformité stricte en mode scroll */
 #scroll-mode .reader-img.zoomable {
     display: block;
-    width: 100vw;
-    max-width: 100vw;
-    height: auto;
-    margin: 0;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    object-fit: cover;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    object-fit: cover !important;
+    background: #181818;
 }
 #scroll-mode > div {
-    gap: 0;
+    gap: 0 !important;
 }
 </style>
 <script>
@@ -121,21 +124,17 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Tap/clic simple pour zoomer/dézoomer
+        // Zoom uniquement sur double-tap/double-clic
         document.querySelectorAll('.reader-img.zoomable').forEach(function(img) {
             let lastTap = 0;
-            img.addEventListener('click', function(e) {
+            img.addEventListener('dblclick', function(e) {
                 img.classList.toggle('zoomed');
             });
             img.addEventListener('touchend', function(e) {
                 let now = new Date().getTime();
                 if (now - lastTap < 350) {
-                    // double tap = rien (évite conflit swipe)
-                } else {
-                    setTimeout(function() {
-                        if (!img.classList.contains('zoomed')) img.classList.add('zoomed');
-                        else img.classList.remove('zoomed');
-                    }, 150);
+                    img.classList.toggle('zoomed');
+                    e.preventDefault();
                 }
                 lastTap = now;
             });
