@@ -89,6 +89,29 @@
 #scroll-mode > div {
     gap: 0 !important;
 }
+
+/* Réduction de la taille des images sur PC (écrans larges) */
+@media (min-width: 900px) {
+    #scroll-mode .reader-img.zoomable,
+    #page-mode .reader-img.zoomable,
+    #page-mode #page-img {
+        width: 60vw !important;
+        max-width: 60vw !important;
+        min-width: 60vw !important;
+        margin: 0 auto !important;
+        padding-left: 0 !important;
+    }
+}
+
+/* Désactivation du zoom sur PC */
+@media (pointer: fine) {
+    .reader-img.zoomable,
+    #page-img.zoomable {
+        cursor: default !important;
+        pointer-events: none !important;
+        transition: none !important;
+    }
+}
 </style>
 <script>
     // Sérialisation sécurisée des URLs d'images côté serveur -> JSON côté client
@@ -128,20 +151,23 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Zoom uniquement sur double-tap/double-clic
+        // Zoom uniquement sur double-tap/double-clic, mais PAS sur PC
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         document.querySelectorAll('.reader-img.zoomable').forEach(function(img) {
-            let lastTap = 0;
-            img.addEventListener('dblclick', function(e) {
-                img.classList.toggle('zoomed');
-            });
-            img.addEventListener('touchend', function(e) {
-                let now = new Date().getTime();
-                if (now - lastTap < 350) {
+            if (isTouchDevice) {
+                let lastTap = 0;
+                img.addEventListener('dblclick', function(e) {
                     img.classList.toggle('zoomed');
-                    e.preventDefault();
-                }
-                lastTap = now;
-            });
+                });
+                img.addEventListener('touchend', function(e) {
+                    let now = new Date().getTime();
+                    if (now - lastTap < 350) {
+                        img.classList.toggle('zoomed');
+                        e.preventDefault();
+                    }
+                    lastTap = now;
+                });
+            }
         });
         showPage(0);
 

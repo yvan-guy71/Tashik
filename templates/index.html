@@ -153,39 +153,42 @@
 {% endif %}
 
 <section class="manga-section">
-    <h2 style="display: flex; align-items: center; gap: 20px; color: rgb(27, 27, 27); font-style: sans-serial;"> <!-- Augmenté le gap pour plus d'espace -->
+    <h2 style="display: flex; align-items: center; gap: 20px; color: rgb(27, 27, 27); font-style: sans-serial;">
         <span style="color: #181717ff; font-size: 1em;">
             <i class="fas fa-book-open"></i>
         </span>
         Chapitres nouvellement ajoutés
     </h2>
     <ul class="recent-chapters-list" style="list-style: none; padding: 0; color: #181717ff;">
-        {% for chap in recent_chapters %}
-        <li class="recent-chapter-row">
-            <div class="recent-chapter-main">
-                <i class="fa fa-book" aria-hidden="true" style="color: #181717ff; font-size: 16px; margin-right: 6px;"></i>
-                <a href="{{ url_for('manga', manga_name=chap.manga_name) }}" style="margin-right: 6px;">
-                    <span class="manga-name-hover">{{ chap.manga_name }}</span>
-                </a>
-                <a href="{{ url_for('reader', manga_name=chap.manga_name, chapter_name=chap.chapter_folder) }}">
-                    <span class="chapter-name-hover">#{{ chap.chapter_folder }}.</span>
-                    <a>
-                    {% if chap.is_hot_auto %}
-                    <span class="badge badge-hot">HOT</span>
-                    {% endif %}
-                    {% if chap.is_new_auto %}
-                    <span class="badge badge-new">NEW</span>
-                    {% endif %}
-                    {% if chap.is_top_auto %}
-                    <span class="badge badge-top">TOP</span>
-                    {% endif %}
-                </a>
-            </div>
-            <span class="chapter-date">
-                Ajouté le {{ chap.date_added|datetimeformat }}
-            </span>
-        </li>
-        {% endfor %}
+        {% if recent_chapters_7j %}
+            {% for chap in recent_chapters_7j %}
+                <li class="recent-chapter-row">
+                    <div class="recent-chapter-main">
+                        <i class="fa fa-book" aria-hidden="true" style="color: #181717ff; font-size: 16px; margin-right: 6px;"></i>
+                        <a href="{{ url_for('manga', manga_name=chap.manga_name) }}" style="margin-right: 6px;">
+                            <span class="manga-name-hover">{{ chap.manga_name }}</span>
+                        </a>
+                        <a href="{{ url_for('reader', manga_name=chap.manga_name, chapter_name=chap.chapter_folder) }}">
+                            <span class="chapter-name-hover">#{{ chap.chapter_folder }}.</span>
+                        </a>
+                        {% if chap.is_hot_auto %}
+                        <span class="badge badge-hot">HOT</span>
+                        {% endif %}
+                        {% if chap.is_new_auto %}
+                        <span class="badge badge-new">NEW</span>
+                        {% endif %}
+                        {% if chap.is_top_auto %}
+                        <span class="badge badge-top">TOP</span>
+                        {% endif %}
+                    </div>
+                    <span class="chapter-date">
+                        Ajouté le {{ chap.date_added|datetimeformat }}
+                    </span>
+                </li>
+            {% endfor %}
+        {% else %}
+                <span style="color: red; margin-bottom: -41px; margin-left: 195px; font-size: 1.2em; font-weight: bold;">Aucun chapitres ajoutés ces 7 derniers jours.</span><p style="color: #000; margin-bottom: 20px; margin-left: 600px;">Lisez Vos Chapitres dans l'onglet Derniers Chapitres.</p>
+        {% endif %}
     </ul>
 </section>
 

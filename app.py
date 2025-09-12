@@ -194,7 +194,12 @@ def index():
         recent_chapters = []
         manga_ids = [chap.manga_id for chap in chapters_db]
         mangas_dict = {m.id: m for m in Manga.query.filter(Manga.id.in_(manga_ids)).all()}
-
+        
+        recent_chapters_7j = [
+        chap for chap in recent_chapters
+        if chap.get('date_added') and (now - datetime.fromtimestamp(chap['date_added'])).days < 7
+        ]
+        
         for chap in chapters_db:
             if chap.date_added and (now - datetime.fromtimestamp(chap.date_added)).days < 7:
                 manga = mangas_dict.get(chap.manga_id)
@@ -251,7 +256,9 @@ def index():
         popular_mangas=popular_mangas,
         recent_chapters=recent_chapters,
         q=search_query,
-        source=source
+        source=source,
+        recent_chapters_7j=recent_chapters_7j,
+        now=now
     )
 
 @app.route('/ajouter_chapitre/<manga_name>', methods=['GET', 'POST'])
@@ -560,7 +567,7 @@ def derniers_chapitres():
         mangas_dict = {m.id: m for m in Manga.query.filter(Manga.id.in_(manga_ids)).all()}
 
         for chap in chapters_db:
-            if chap.date_added and (now - datetime.fromtimestamp(chap.date_added)).days < 7:
+            if chap.date_added or (now - datetime.fromtimestamp(chap.date_added)).days < 7:
                 manga = mangas_dict.get(chap.manga_id)
                 recent_chapters.append({
                     "manga_name": manga.name if manga else "",
@@ -569,7 +576,7 @@ def derniers_chapitres():
                     "cover": get_cover_url(manga.name) if manga else url_for('static', filename='default-cover.jpg'),
                     "chapter_title": chap.name,
                     "is_hot": hasattr(manga, "nb_lectures_recent") and manga.nb_lectures_recent > 100,
-                    "is_new": True
+                    "is_new": (now - datetime.fromtimestamp(chap.date_added)).days < 7 if chap.date_added else False
                 })
     else:
         recent_chapters = get_recent_chapters()
