@@ -1143,6 +1143,10 @@ body.dark-mode .sidebar .widget {
     .contact-form {
         margin-top: 24px;
     }
+    p {
+        margin: 12px 0;
+        line-height: 1.6;
+    }
 }
 
 .auth-form {
