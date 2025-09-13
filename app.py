@@ -194,30 +194,27 @@ def index():
         recent_chapters = []
         manga_ids = [chap.manga_id for chap in chapters_db]
         mangas_dict = {m.id: m for m in Manga.query.filter(Manga.id.in_(manga_ids)).all()}
-        
-        recent_chapters_7j = [
-        chap for chap in recent_chapters
-        if chap.get('date_added') and (now - datetime.fromtimestamp(chap['date_added'])).days < 7
-        ]
-        
         for chap in chapters_db:
-            if chap.date_added and (now - datetime.fromtimestamp(chap.date_added)).days < 7:
-                manga = mangas_dict.get(chap.manga_id)
-                cover_path = os.path.join(MANGAS_DIR, manga.name, manga.cover_filename) if manga and manga.cover_filename else None
-                cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga and manga.cover_filename and cover_path and os.path.exists(cover_path) else url_for('static', filename='default-cover.jpg')
-                recent_chapters.append({
-                    "manga_name": manga.name if manga else "",
-                    "chapter_folder": chap.name,
-                    "date_added": chap.date_added,
-                    "cover": cover_url,
-                    "chapter_title": chap.name,
-                    "is_hot_auto": getattr(chap, "nb_lectures_recent", 0) > 100,
-                    "is_new_auto": True,
-                    # Ajoute aussi les badges manuels du manga
-                    "is_hot_manual": manga.is_hot if manga else False,
-                    "is_new_manual": manga.is_new if manga else False,
-                    "is_top_manual": manga.is_top if manga else False,
-                })
+            manga = mangas_dict.get(chap.manga_id)
+            cover_path = os.path.join(MANGAS_DIR, manga.name, manga.cover_filename) if manga and manga.cover_filename else None
+            cover_url = url_for('serve_manga_file', manga=manga.name, filename=manga.cover_filename) if manga and manga.cover_filename and cover_path and os.path.exists(cover_path) else url_for('static', filename='default-cover.jpg')
+            recent_chapters.append({
+                "manga_name": manga.name if manga else "",
+                "chapter_folder": chap.name,
+                "date_added": chap.date_added,
+                "cover": cover_url,
+                "chapter_title": chap.name,
+                "is_hot_auto": getattr(chap, "nb_lectures_recent", 0) > 100,
+                "is_new_auto": (now - datetime.fromtimestamp(chap.date_added)).days < 7 if chap.date_added else False,
+                # Ajoute aussi les badges manuels du manga
+                "is_hot_manual": manga.is_hot if manga else False,
+                "is_new_manual": manga.is_new if manga else False,
+                "is_top_manual": manga.is_top if manga else False,
+            })
+        recent_chapters_7j = [
+            chap for chap in recent_chapters
+            if chap.get('date_added') and (now - datetime.fromtimestamp(chap['date_added'])).days < 7
+        ]
     else:
         mangas_data = [
             _get_manga_details_from_fs(manga_name_fs)
